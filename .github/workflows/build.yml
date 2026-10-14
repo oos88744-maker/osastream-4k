@@ -21,7 +21,17 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          flutter-version: '3.19.0'
+
+      - name: Prepare Flutter Project
+        run: |
+          if [ ! -f "pubspec.yaml" ]; then
+            flutter create --org com.osastream.app --project-name osastream_4k temp_project
+            cp -r temp_project/* .
+            rm -rf temp_project
+          fi
+          if [ -f "main_app.dart" ]; then
+            cp main_app.dart lib/main.dart
+          fi
 
       - name: Get dependencies
         run: flutter pub get

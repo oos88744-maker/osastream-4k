@@ -22,7 +22,7 @@ jobs:
         with:
           channel: 'stable'
 
-      - name: Prepare Flutter Project
+      - name: Prepare Flutter Project & Packages
         run: |
           if [ ! -f "pubspec.yaml" ]; then
             flutter create --org com.osastream.app --project-name osastream_4k temp_project
@@ -31,7 +31,16 @@ jobs:
           fi
           if [ -f "main_app.dart" ]; then
             cp main_app.dart lib/main.dart
+            # استخراج جميع المكاتب المذكورة في الكود وتثبيتها تلقائياً
+            PACKAGES=$(grep -oP "import 'package:\K[^/']+" lib/main.dart | grep -v "^flutter$" | grep -v "^osastream_4k$" | sort -u | tr '\n' ' ')
+            if [ ! -z "$PACKAGES" ]; then
+              echo "Installing packages: $PACKAGES"
+              flutter pub add $PACKAGES
+            fi
           fi
+
+      - name: Accept Android Licenses
+        run: yes | flutter doctor --android-licenses || true
 
       - name: Get dependencies
         run: flutter pub get
@@ -42,6 +51,6 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: app-release
+          name: OSASTREAM-4K-APK
           path: build/app/outputs/flutter-apk/app-release.apk
           

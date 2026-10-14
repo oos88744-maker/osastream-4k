@@ -1,4 +1,4 @@
-name: Build OSASTREAM 4K APK
+ name: Build OSASTREAM 4K APK
 
 on:
   workflow_dispatch:
